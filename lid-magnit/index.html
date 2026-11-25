@@ -18,6 +18,7 @@
   --strong:#E6DED0; --text:#BDBDB8; --quiet:#A3A5A5;
   --paper:#E6DED0; --paper-soft:#F0EADF; --paper-line:#CFC8BA; --ink:#2B2E30;
   --burgundy:#6A2630; --burgundy-up:#9A3A47; --warn:#3B2529;
+  --fir:#173F35; --fir-up:#2A5C4D; --fir-text:#C9D3CC;
   --bar-bg:rgba(30,32,34,.86);
   --font:'Montserrat',-apple-system,"Segoe UI",system-ui,sans-serif;
   --r-hero:28px; --r-card:24px; --r-inner:20px; --r-btn:18px; --r-field:14px; --r-pill:999px;
@@ -96,12 +97,13 @@ p{margin:0}
 .opt[aria-checked="true"] small{color:var(--strong)}
 
 .match{margin-top:14px;border-radius:var(--r-inner);padding:16px;display:flex;flex-direction:column;gap:8px}
-.match.ok{background:var(--raised)}
+.match.ok{background:var(--fir)}
+.match.ok p{color:var(--fir-text)}
 .match.bad{background:var(--warn)}
 .match.idle{background:var(--raised);color:var(--quiet)}
 .match b{color:var(--strong);font:700 16px/1.35 var(--font)}
 .match .tag{align-self:flex-start;padding:5px 10px;border-radius:var(--r-pill);font:500 12px/1 var(--font)}
-.match.ok .tag{background:var(--hair);color:var(--strong)}
+.match.ok .tag{background:var(--fir-up);color:var(--strong)}
 .match.bad .tag{background:var(--burgundy);color:var(--strong)}
 
 /* чек-лист */
@@ -330,7 +332,9 @@ p{margin:0}
     return {k:'bad',tag:'Не совпадает',title:'Продаёшь тем, кто уже в теме, а лид-магнит забирают новички',text:'Им пока рано покупать твой продукт: они даже не понимают, зачем он им'};
   }
 
+  function passed(){return !!(state.product&&state.lm);}
   function tgText(){
+    if(!passed())return 'Ассаляму алейкум, Мурад! Я с твоего сайта. Хочу, чтобы ты посмотрел мой лид-магнит';
     var n=state.checks.length;
     var t='Ассаляму алейкум, Мурад! Прошёл проверку лид-магнита: '+n+' из 8.';
     if(state.product)t+=' Продаю '+PRODUCT[state.product]+'.';
@@ -385,7 +389,9 @@ p{margin:0}
   }
 
   document.getElementById('copy').addEventListener('click',function(){
-    var t=tgText(), out=document.getElementById('copied');
+    var out=document.getElementById('copied');
+    if(!passed()){out.textContent='Сначала ответь на вопросы 01 и 02, тогда будет что скопировать';return;}
+    var t=tgText();
     function done(){out.textContent='Скопировал. Вставь это в сообщение мне';}
     function fallback(){var ta=document.getElementById('copy-src');ta.value=t;ta.select();try{document.execCommand('copy');done();}catch(e){out.textContent='Не получилось скопировать. Просто нажми «Написать в Telegram»';}}
     try{navigator.clipboard.writeText(t).then(done,fallback);}catch(e){fallback();}
